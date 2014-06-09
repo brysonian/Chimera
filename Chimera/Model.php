@@ -1,8 +1,6 @@
-<?
-declare(encoding='UTF-8');
+<?php
 
-namespace chimera
-{
+namespace chimera;
 
 class Model
 {
@@ -34,7 +32,6 @@ class Model
 
 			if ($result !== false) {
 				$d = new Document($this);
-				$d->id = $result['id'];
 				$d->data(json_decode($result['_data'], true));
 				$def = $this->_schema->definition();
 				foreach ($def as $source => $info) {
@@ -47,15 +44,27 @@ class Model
 		return false;
 	}
 
-	public function find($params) {
+	public function find($params=array()) {
+		$query = $this->select();
 		$where = isset($params['where']) ? $params['where'] : array();
-		$query = $this->select()->where($where);
-
+		if (!empty($where)) $query->where($where);
 		if (isset($params['limit'])) $query->limit($params['limit']);
+		if (isset($params['order'])) $query->order($params['order']);
 
+		$output = array();
 		$s = $query->execute();
-		if ($s) die(var_export($s->fetch()));
-
+		if ($s !== false) {
+	    while ($row = $s->fetch(\PDO::FETCH_ASSOC)) {
+				$d = new Document($this);
+				$d->data(json_decode($row['_data'], true));
+				$def = $this->_schema->definition();
+				foreach ($def as $source => $info) {
+					$d->$source = $row[$source];
+				}
+				$d->id = $row['id'];
+	    	$output[] = $d;
+			}
+		}
 		/****
 
 			When you iterate over the results here it should be document objects that you get,
@@ -85,7 +94,7 @@ class Model
 			}
 		}
 		*/
-		return false;
+		return $output;
 	}
 
 	public function select() {
@@ -94,10 +103,8 @@ class Model
 
 	public function schema() { return $this->_schema; }
 	public function source() { return $this->_source; }
+	public function owner() { return $this->_owner; }
 }
 
-}
 
 
-
-?>

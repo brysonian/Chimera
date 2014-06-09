@@ -35,6 +35,11 @@ class Query
 		return $this;
 	}
 
+	public function order($order) {
+		$this->_order = $order;
+		return $this;
+	}
+
 	public function select() {
 		$this->_verb = 'SELECT';
 		return $this;
@@ -69,7 +74,7 @@ class Query
 		return $bound;
 	}
 
-	protected function sql() {
+	public function sql() {
 		$fields = empty($this->_fields) ? '*' : join(',', $this->_fields);
 		$where = '';
 		if (!empty($this->_conditions)) {
@@ -83,7 +88,8 @@ class Query
 			}
 		}
 		$limit = empty($this->_limit) ? '' : 'LIMIT ' . $this->_limit;
-		$sql = sprintf('%s %s FROM %s %s %s', $this->_verb, $fields, $this->_source, $where, $limit);
+		$order = empty($this->_order) ? '' : 'ORDER BY ' . $this->_order;
+		$sql = sprintf('%s %s FROM %s %s %s %s', $this->_verb, $fields, $this->_source, $where, $limit, $order);
 		return $sql;
 	}
 

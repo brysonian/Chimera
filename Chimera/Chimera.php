@@ -1,9 +1,7 @@
-<?
-declare(encoding='UTF-8');
+<?php
 
 
-namespace chimera
-{
+namespace chimera;
 
 class Chimera
 {
@@ -60,6 +58,7 @@ class Chimera
 	}
 
 	public function set_adapter($pdo) {
+		$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		$this->_adapter = $pdo;
 	}
 
@@ -81,13 +80,13 @@ class Chimera
 			$this->_adapter->query($sql);
 		}
 	}
+
+	public function prepare($sql) {
+		return $this->_adapter->prepare($sql);
+	}
 }
 
 require(__DIR__.'/Schema.php');
 require(__DIR__.'/Model.php');
 require(__DIR__.'/Document.php');
 
-
-
-}
-?>
