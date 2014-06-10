@@ -80,8 +80,10 @@ class Document
 
 		} else {
 #TODO "inserts need to be moved into storage classes";
-			$insert = 'INSERT INTO ' . $this->_model->source() . ' VALUES (:id, :_data';
+			$sql_field_names = array('id', '_data');
+			$insert = 'INSERT INTO ' . $this->_model->source() . ' (%s) VALUES (:id, :_data';
 			foreach ($fields as $name => $info) {
+				$sql_field_names[] = $name;
 				switch ($info['type']) {
 					case Schema::Date:
 					case Schema::DateTime:
@@ -90,7 +92,9 @@ class Document
 							$insert .= ',' . $this->$name;
 							unset($values[':'.$name]);
 						}
-						else $insert .= ',:'.$name;
+						else {
+							$insert .= ',:'.$name;
+						}
 						break;
 
 					default:
@@ -99,8 +103,11 @@ class Document
 				}
 			}
  			$insert .= ')';
+			$insert = sprintf($insert, join(',', $sql_field_names));
+
 			$query = $this->_model->owner()->prepare($insert);
 			$ok = $query->execute($values);
+
 			if (!$ok) {
 				$e = $query->errorInfo();
 				throw new \Exception('Error inserting document: ' . $e[2]);
