@@ -48,9 +48,10 @@ class Document
 		$values[':_data'] = json_encode($data);
 
 		if ($this->id) {
+			$values[':id'] = $this->id;
 			unset($values['id']);
 	#TODO "updates need to be moved into storage classes";
-			$update = 'UPDATE ' . $this->_model->source() . ' SET _data=:data';
+			$update = 'UPDATE ' . $this->_model->source() . ' SET _data=:_data';
 			foreach($fields as $name => $info) {
 				switch ($info['type']) {
 					case Schema::Date:
@@ -58,7 +59,7 @@ class Document
 					case Schema::TimeStamp:
 						if (strpos($this->$name, ')')) {
 							$update .= ", $name=" . $this->$name;
-							unset($values[$name]);
+							unset($values[':'.$name]);
 						}
 						else $update .= ", $name=:$name";
 						break;
@@ -71,7 +72,7 @@ class Document
 			$update .= ' WHERE id=:id';
 			$query = $this->_model->owner()->prepare($update);
 
-			$ok = $query->execute(array_values($values));
+			$ok = $query->execute($values);
 			if (!$ok) {
 				$e = $query->errorInfo();
 				throw new \Exception('Error updating document: ' . $e[2]);
