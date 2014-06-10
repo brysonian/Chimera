@@ -40,18 +40,17 @@ class Document
 		$fields = $this->_model->schema()->definition();
 		$field_names = array_keys($fields);
 		$data = $this->data();
-		$values = array('id' => 'NULL', '_data' => '');
+		$values = array(':id' => 'NULL', ':_data' => '');
 		foreach ($field_names as $key => $name) {
-			$values[$name] = $this->$name;
+			$values[':' . $name] = $this->$name;
 			unset($data[$name]);
 		}
-		unset($data['id']);
-		$values['_data'] = json_encode($data);
+		$values[':_data'] = json_encode($data);
 
 		if ($this->id) {
 			unset($values['id']);
 	#TODO "updates need to be moved into storage classes";
-			$update = 'UPDATE ' . $this->_model->source() . ' SET _data=?';
+			$update = 'UPDATE ' . $this->_model->source() . ' SET _data=:data';
 			foreach($fields as $name => $info) {
 				switch ($info['type']) {
 					case Schema::Date:
@@ -61,19 +60,16 @@ class Document
 							$update .= ", $name=" . $this->$name;
 							unset($values[$name]);
 						}
-						else $update .= ", $name=?";
+						else $update .= ", $name=:$name";
 						break;
 
 					default:
-						$update .= ", $name=?";
+						$update .= ", $name=:$name";
 						break;
 				}
 			}
-			$update .= ' WHERE id=?';
+			$update .= ' WHERE id=:id';
 			$query = $this->_model->owner()->prepare($update);
-
-			// don't change id, but stick it on the end for the where
-			$values[] = $this->id;
 
 			$ok = $query->execute(array_values($values));
 			if (!$ok) {
@@ -84,7 +80,7 @@ class Document
 
 		} else {
 #TODO "inserts need to be moved into storage classes";
-			$insert = 'INSERT INTO ' . $this->_model->source() . ' VALUES (?,?';
+			$insert = 'INSERT INTO ' . $this->_model->source() . ' VALUES (:id, :_data';
 			foreach ($fields as $name => $info) {
 				switch ($info['type']) {
 					case Schema::Date:
@@ -92,20 +88,19 @@ class Document
 					case Schema::TimeStamp:
 						if (strpos($this->$name, ')')) {
 							$insert .= ',' . $this->$name;
-							unset($values[$name]);
+							unset($values[':'.$name]);
 						}
-						else $insert .= ',?';
+						else $insert .= ',:'.$name;
 						break;
 
 					default:
-						$insert .= ',?';
+						$insert .= ',:'.$name;
 						break;
 				}
 			}
  			$insert .= ')';
-
 			$query = $this->_model->owner()->prepare($insert);
-			$ok = $query->execute(array_values($values));
+			$ok = $query->execute($values);
 			if (!$ok) {
 				$e = $query->errorInfo();
 				throw new \Exception('Error inserting document: ' . $e[2]);
