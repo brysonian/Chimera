@@ -1,0 +1,12 @@
+{
+    "name": "chimera/chimera",
+    "description": "A monstrous hybrid of database goodness.",
+    "homepage": "http://github.com/brysonian/chimera",
+    "license": "BSD",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": { "Chimera": "" }
+    }
+}
