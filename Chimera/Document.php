@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 namespace chimera;
@@ -113,9 +113,12 @@ class Document
 				$e = $query->errorInfo();
 				throw new \Exception('Error inserting document: ' . $e[2]);
 				return false;
+			} else {
+				$this->id = $this->_model->owner()->lastInsertId();
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public function delete() {

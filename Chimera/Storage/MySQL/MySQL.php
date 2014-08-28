@@ -1,7 +1,7 @@
-<?
+<?php
 
-namespace chimera\Storage
-{
+namespace chimera\Storage;
+
 
 class MySQL
 {
@@ -45,7 +45,3 @@ class MySQL
 	}
 
 }
-
-}
-
-?>

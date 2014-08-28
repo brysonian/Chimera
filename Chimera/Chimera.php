@@ -67,6 +67,10 @@ class Chimera
 		return new $query($this->adapter());
 	}
 
+	public function lastInsertId() {
+		return $this->_adapter->lastInsertId();
+	}
+
 	// create table and migrations
 	public function migrate($model_name=false) {
 		// do them all

@@ -1,8 +1,6 @@
-<?
-declare(encoding='UTF-8');
+<?php
 
-namespace chimera
-{
+namespace chimera;
 
 
 class Schema
@@ -105,8 +103,3 @@ class VirtualAttribute
 	function execute_get($schema) { return call_user_func($this->_get, $schema); }
 	function execute_set($schema, $val) { return call_user_func($this->_set, $schema, $val); }
 }
-
-}
-
-
-?>
