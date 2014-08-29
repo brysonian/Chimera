@@ -77,6 +77,8 @@ class Document
 				$e = $query->errorInfo();
 				throw new \Exception('Error updating document: ' . $e[2]);
 				return false;
+			} else {
+				return true;
 			}
 
 		} else {
