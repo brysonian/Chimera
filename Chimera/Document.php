@@ -83,8 +83,10 @@ class Document
 
 		} else {
 #TODO "inserts need to be moved into storage classes";
-			$sql_field_names = array('id', '_data');
-			$insert = 'INSERT INTO ' . $this->_model->source() . ' (%s) VALUES (:id, :_data';
+			unset($values['id']);
+			unset($values[':id']);
+			$sql_field_names = array('_data');
+			$insert = 'INSERT INTO ' . $this->_model->source() . ' (%s) VALUES (:_data';
 			foreach ($fields as $name => $info) {
 				$sql_field_names[] = $name;
 				switch ($info['type']) {
