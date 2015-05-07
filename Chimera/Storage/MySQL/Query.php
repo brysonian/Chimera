@@ -10,7 +10,7 @@ class Query
 	protected $_order        = array();
 	protected $_group        = array();
 	protected $_limit        = '';
-	protected $_limit_offset = '';
+	protected $_offset = '';
 	protected $_source       = '';
 	protected $_adapter;
 	protected $_verb				 = 'SELECT';
@@ -31,6 +31,11 @@ class Query
 
 	public function limit($limit) {
 		$this->_limit = $limit;
+		return $this;
+	}
+
+	public function offset($offset) {
+		$this->_offset = $offset;
 		return $this;
 	}
 
@@ -86,7 +91,13 @@ class Query
 				$where .= '(' . join($set['type'], $placeholders) . ')';
 			}
 		}
-		$limit = empty($this->_limit) ? '' : 'LIMIT ' . $this->_limit;
+
+		$limit = '';
+		if (!empty($this->_limit)) {
+			$limit = 'LIMIT '
+							.	(empty($this->_offset) ? '' : $this->_offset . ', ')
+							.	(empty($this->_limit) ? '' : $this->_limit);
+		}
 		$order = empty($this->_order) ? '' : 'ORDER BY ' . $this->_order;
 		$sql = sprintf('%s %s FROM %s %s %s %s', $this->_verb, $fields, $this->_source, $where, $limit, $order);
 		return $sql;

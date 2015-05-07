@@ -49,6 +49,7 @@ class Model
 		$where = isset($params['where']) ? $params['where'] : array();
 		if (!empty($where)) $query->where($where);
 		if (isset($params['limit'])) $query->limit($params['limit']);
+		if (isset($params['offset'])) $query->offset($params['offset']);
 		if (isset($params['order'])) $query->order($params['order']);
 
 		$output = array();
