@@ -80,7 +80,6 @@ class Document
 			} else {
 				return true;
 			}
-
 		} else {
 #TODO "inserts need to be moved into storage classes";
 			unset($values['id']);
