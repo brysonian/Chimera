@@ -83,15 +83,19 @@ class Query
 		$where = '';
 		if (!empty($this->_conditions)) {
 			$where = 'WHERE ';
-			foreach ($this->_conditions as $set) {
+			foreach ($this->_conditions as $k => $set) {
 				$placeholders = array();
 				foreach ($set['conditions'] as $key => $value) {
-					$placeholders[] = " $key=? ";
+					$op = '=';
+					if (is_array($value)) {
+						$op = $value[0];
+						$this->_conditions[$k]['conditions'][$key] = $value[1];
+					}
+					$placeholders[] = " {$key}{$op}? ";
 				}
 				$where .= '(' . join($set['type'], $placeholders) . ')';
 			}
 		}
-
 		$limit = '';
 		if (!empty($this->_limit)) {
 			$limit = 'LIMIT '
