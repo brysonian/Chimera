@@ -99,7 +99,7 @@ class Query
 							.	(empty($this->_limit) ? '' : $this->_limit);
 		}
 		$order = empty($this->_order) ? '' : 'ORDER BY ' . $this->_order;
-		$sql = sprintf('%s %s FROM %s %s %s %s', $this->_verb, $fields, $this->_source, $where, $limit, $order);
+		$sql = sprintf('%s %s FROM %s %s %s %s', $this->_verb, $fields, $this->_source, $where, $order, $limit);
 		return $sql;
 	}
 
