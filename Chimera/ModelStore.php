@@ -8,7 +8,7 @@ class ModelStore
 
 	private function chimera() {
 		static $chimera;
-		if (!$chimera) $chimera = new \chimera\Chimera();
+		if (!$chimera) $chimera = new \Chimera\Chimera();
 		return $chimera;
 	}
 
