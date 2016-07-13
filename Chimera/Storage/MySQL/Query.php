@@ -15,6 +15,9 @@ class Query
 	protected $_adapter;
 	protected $_verb				 = 'SELECT';
 
+	protected $_user_sql		 = false;
+	protected $_user_where 	 = false;
+
 	function __construct($adapter) {
 		$this->_adapter = $adapter;
 	}
@@ -49,8 +52,12 @@ class Query
 		return $this;
 	}
 
-	public function where($conditions=array(), $type='AND', $setType='AND') {
-		$this->_conditions[] = array('conditions' => $conditions, 'type'=>$type, 'setType'=>$setType);
+	public function where($conditions=array(), $type='AND', $force=false) {
+		$this->_conditions[] = array('conditions' => $conditions, 'type'=>$type);
+		if ($force === true) {
+			$this->_user_where = $conditions;
+			$this->_conditions = [];
+		}
 		return $this;
 	}
 
@@ -78,10 +85,20 @@ class Query
 		return $bound;
 	}
 
-	public function sql() {
+	public function sql($SET_SQL=false) {
+		if ($SET_SQL !== false) {
+			$this->_user_sql = $SET_SQL;
+			return;
+		}
+
+		if ($this->_user_sql !== false)
+			return $this->_user_sql;
+
 		$fields = empty($this->_fields) ? '*' : join(',', $this->_fields);
 		$where = '';
-		if (!empty($this->_conditions)) {
+		if ($this->_user_where) {
+			$where = $this->_user_where;
+		} else if (!empty($this->_conditions)) {
 			$where = 'WHERE ';
 			foreach ($this->_conditions as $k => $set) {
 				$placeholders = array();

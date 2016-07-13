@@ -12,6 +12,7 @@ class Schema
 	const TimeStamp = "TimeStamp";
 	const UNIXTimeStamp = "UNIXTimeStamp";
 	const Date     = "Date";
+	const JSON     = "JSON";
 
 	protected $_virtuals = array();
 	protected $_definition = array();
@@ -38,7 +39,8 @@ class Schema
 	}
 
 	public function validate($key, $val=false) {
-		if ($val !== false) return $this->validate_prop($key, $val);
+		if ($val !== false || !is_object($key))
+			return $this->validate_prop($key, $val);
 
 		# here, key will be a document
 		foreach ($this->_definition as $name => $info) {
@@ -71,6 +73,9 @@ class Schema
 			case static::String:
 				if (!$this->_strict_typecheck) return true; // make sure everything can be cast to a string!!!
 				if (!is_string($val)) throw new \Exception("Validation Error: $key must be a string.");
+				return;
+
+			case static::JSON:
 				return;
 
 			default:

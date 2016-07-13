@@ -25,6 +25,13 @@ class Document
 		}
 	}
 
+	public function __unset($key) {
+		if ($key == 'id') $this->_id = false;
+		else {
+			unset($this->_data[$key]);
+		}
+	}
+
 	public function __get($key) {
 		if ($key == 'id') return $this->_id;
 		if (!isset($this->_data[$key])) {
@@ -36,7 +43,6 @@ class Document
 
 	public function save() {
 		$this->_model->schema()->validate($this);
-
 		$fields = $this->_model->schema()->definition();
 		$field_names = array_keys($fields);
 		$data = $this->data();
@@ -64,6 +70,11 @@ class Document
 						else $update .= ", $name=:$name";
 						break;
 
+					case Schema::JSON:
+						$update .= ",$name=:$name";
+						$values[':'.$name] = json_encode($values[':'.$name]);
+						break;
+
 					default:
 						$update .= ", $name=:$name";
 						break;
@@ -71,7 +82,6 @@ class Document
 			}
 			$update .= ' WHERE id=:id';
 			$query = $this->_model->owner()->prepare($update);
-
 			$ok = $query->execute($values);
 			if (!$ok) {
 				$e = $query->errorInfo();
@@ -99,6 +109,11 @@ class Document
 						else {
 							$insert .= ',:'.$name;
 						}
+						break;
+
+					case Schema::JSON:
+						$insert .= ',:'.$name;
+						$values[':'.$name] = json_encode($values[':'.$name]);
 						break;
 
 					default:

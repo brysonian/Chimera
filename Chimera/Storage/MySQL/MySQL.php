@@ -14,6 +14,7 @@ class MySQL
 			case \chimera\Schema::String:
 				return 'VARCHAR(255)';
 
+			case \chimera\Schema::JSON:
 			case \chimera\Schema::Text:
 				return 'TEXT';
 
