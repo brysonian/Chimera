@@ -77,7 +77,7 @@ class Model
 					$d->$source = $row[$source];
 			}
 		}
-		$d->id = $row['id'];
+		$d->id = (int) $row['id'];
 		return $d;
 	}
 
@@ -89,3 +89,6 @@ class Model
 	public function source() { return $this->_source; }
 	public function owner() { return $this->_owner; }
 }
+
+
+
