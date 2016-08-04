@@ -66,7 +66,16 @@ class Model
 		$d->data(json_decode($row['_data'], true));
 		$def = $this->_schema->definition();
 		foreach ($def as $source => $info) {
-			$d->$source = ($info['type'] == \chimera\Schema::JSON) ? json_decode($row[$source]) : $row[$source];
+			switch($info['type']) {
+				case \chimera\Schema::JSON:
+					$d->$source = json_decode($row[$source]);
+					break;
+				case \chimera\Schema::Int:
+					$d->$source = (int)($row[$source]);
+					break;
+				default:
+					$d->$source = $row[$source];
+			}
 		}
 		$d->id = $row['id'];
 		return $d;
@@ -80,6 +89,3 @@ class Model
 	public function source() { return $this->_source; }
 	public function owner() { return $this->_owner; }
 }
-
-
-
