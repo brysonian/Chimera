@@ -7,6 +7,9 @@ class Schema
 {
 	const String   = "String";
 	const Int      = "Int";
+	const UInt      = "UInt";
+	const BigInt      = "BigInt";
+	const UBigInt      = "UBigInt";
 	const Text     = "Text";
 	const DateTime = "DateTime";
 	const TimeStamp = "TimeStamp";
@@ -59,14 +62,22 @@ class Schema
 		if (!isset($this->_definition[$key])) return false;
 		switch ($this->_definition[$key]['type']) {
 			case static::Int:
+			case static::UInt:
+			case static::BigInt:
+			case static::UBigInt:
 				if (!is_numeric($val)) throw new \Exception("Validation Error: $key must be numeric.");
 				return;
 
 			case static::Date:
 			case static::DateTime:
-			case static::TimeStamp:
 				if ($val == 'NOW()' || $val == 'DATE()') return;
 				if (strtotime($val) === false) throw new \Exception("Validation Error: $key must be a valid date or time.");
+				return;
+
+			case static::TimeStamp:
+			case static::UNIXTimeStamp:
+				if ($val == 'NOW()' || $val == 'DATE()') return;
+				if (date('U', (int) $val) === false) throw new \Exception("Validation Error: $key must be a valid timestamp value.");
 				return;
 
 			case static::Text:
@@ -79,7 +90,7 @@ class Schema
 				return;
 
 			default:
-				throw new Exception('Cannot validate unknown attribute type '. $this->_definition[$key]['type'] .'.');
+				throw new \Exception('Cannot validate unknown attribute type '. $this->_definition[$key]['type'] .'.');
 				return;
 		}
 	}

@@ -11,6 +11,15 @@ class MySQL
 			case \chimera\Schema::Int:
 				return 'INT';
 
+			case \chimera\Schema::UInt:
+				return 'INT UNSIGNED';
+
+			case \chimera\Schema::BigInt:
+				return 'BIGINT';
+
+			case \chimera\Schema::UBigInt:
+				return 'BIGINT UNSIGNED';
+
 			case \chimera\Schema::String:
 				return 'VARCHAR(255)';
 
