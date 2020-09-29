@@ -36,16 +36,18 @@ class Model
 	}
 
 	public function find($params=array()) {
-		if (!($params instanceof Query)) {
+		if (!($params instanceof Storage\MySQL\Query)) {
 			$query = $this->select();
 			$where = isset($params['where']) ? $params['where'] : array();
-			if (!empty($where)) $query->where($where);
+			$type = isset($params['type']) ? $params['type'] : 'AND';
+			if (!empty($where)) $query->where($where, $type);
 			if (isset($params['limit'])) $query->limit($params['limit']);
 			if (isset($params['offset'])) $query->offset($params['offset']);
 			if (isset($params['order'])) $query->order($params['order']);
+			return $this->query($query);
 		}
 		// die(var_export($query->sql()));
-		return $this->query($query);
+		return $this->query($params);
 	}
 
 	public function query($query=false, $raw=false) {
@@ -89,6 +91,3 @@ class Model
 	public function source() { return $this->_source; }
 	public function owner() { return $this->_owner; }
 }
-
-
-
